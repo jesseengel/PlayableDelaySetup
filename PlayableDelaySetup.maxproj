@@ -2,7 +2,7 @@
 	"name" : "PlayableDelaySetup",
 	"version" : 1,
 	"creationdate" : -832528961,
-	"modificationdate" : -831560668,
+	"modificationdate" : -831411552,
 	"viewrect" : [ 29.0, 69.0, 300.0, 500.0 ],
 	"autoorganize" : 1,
 	"hideprojectwindow" : 0,
@@ -50,22 +50,22 @@
 		}
 ,
 		"other" : 		{
+			"play.sh" : 			{
+				"kind" : "file",
+				"local" : 1
+			}
+,
+			"Python_OSC.py" : 			{
+				"kind" : "file",
+				"local" : 1
+			}
+,
 			"polydelay.py" : 			{
 				"kind" : "file",
 				"local" : 1
 			}
 ,
-			"wac_LpHandler_Manual_v1_1_0.pdf" : 			{
-				"kind" : "file",
-				"local" : 1
-			}
-,
-			"polydelay.pyc" : 			{
-				"kind" : "file",
-				"local" : 1
-			}
-,
-			"play.sh" : 			{
+			"launchpad.py" : 			{
 				"kind" : "file",
 				"local" : 1
 			}
@@ -75,7 +75,7 @@
 				"local" : 1
 			}
 ,
-			"Python_OSC.py" : 			{
+			"test_Python_OSC.py" : 			{
 				"kind" : "file",
 				"local" : 1
 			}
@@ -95,18 +95,8 @@
 				"local" : 1
 			}
 ,
-			"test_Python_OSC.py" : 			{
-				"kind" : "file",
-				"local" : 1
-			}
-,
 			"PlayableDelaySetup_20130925_165644.maxzip" : 			{
 				"kind" : "project",
-				"local" : 1
-			}
-,
-			"launchpad.py" : 			{
-				"kind" : "file",
 				"local" : 1
 			}
 ,
@@ -120,12 +110,22 @@
 				"local" : 1
 			}
 ,
+			"polydelay.pyc" : 			{
+				"kind" : "file",
+				"local" : 1
+			}
+,
 			"ta.pyc" : 			{
 				"kind" : "file",
 				"local" : 1
 			}
 ,
 			"test_launchpad.py" : 			{
+				"kind" : "file",
+				"local" : 1
+			}
+,
+			"wac_LpHandler_Manual_v1_1_0.pdf" : 			{
 				"kind" : "file",
 				"local" : 1
 			}
