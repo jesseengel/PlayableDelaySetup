@@ -1,0 +1,1 @@
+This is a Python/Max implementation of my PolyDelay effect with lauchpad, softstep, and i2Mmusicport control.
