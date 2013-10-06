@@ -1,24 +1,49 @@
 import OSC
-import time
-import launchpad
+import time, random
+import launchpad, polydelay
 
-
-receive_address = ( '127.0.0.1', 57120 )
-send_address = ( '127.0.0.1', 9600 )
+receive_port = ( '127.0.0.1', 57120 )
+send_port = ( '127.0.0.1', 9600 )
+errors = 0
+count = 0
+speed = .1 #seconds
 
 # Sending
-s = OSC.OSCClient()
-s.connect(send_address) # (host,port)
-
+client = OSC.OSCClient()
+client.connect(send_port) # (host,port)
 msg = OSC.OSCMessage()
-msg.setAddress("/launchpad")
 
- 
-def sendOSC(address, data):
-    msg.setAddress(address)
-    msg.append(data)
-    s.send(msg)
-    msg.clearData()
-                
+def sendOSC(port, address, data):
+        msg.setAddress(address)
+        msg.append(data)
+        try:
+            client.sendto(msg, port, None)
+        except OSCClientError:
+            print 'Packet didn\'t make it'
+            errors += 1
+        msg.clearData()
 
-sendOSC("/launchpad", ['led',1,2,'Green'])
+
+sendOSC(send_port, "/launchpad", ['clear_all'])
+
+        
+color_list = ['Red','Green','Yellow', 'Clear']
+    
+try:
+    while True: 
+        data = ['led', random.randint(0,7), random.randint(0,7),
+                color_list[random.randint(0,len(color_list)-1)] ]
+        sendOSC(send_port, "/launchpad", data)
+        time.sleep(speed)
+        count += 1
+
+except KeyboardInterrupt:
+    print "\nDone!"
+    print "Errors:", errors
+    print "Count:", count
+
+
+
+# Messing around
+# sendOSC(send_port, "/launchpad", ['refresh'])
+# sendOSC(send_port, "/polydelay", ['status'])

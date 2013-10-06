@@ -24,25 +24,25 @@ import time, threading
 import polydelay, launchpad, softstep
 
 
-receive_address = ( '127.0.0.1', 9600 )
-send_address = ( '127.0.0.1', 57120 )
+receive_port = ( '127.0.0.1', 9600 )
+send_port = ( '127.0.0.1', 57120 )
 
 # Sending
 send = OSC.OSCClient()
-send.connect(send_address) # (host,port)
+send.connect(send_port) # (host,port)
 
-# Recieving
-recieve = OSC.OSCServer(receive_address)
-recieve.addDefaultHandlers()
+# Receiving
+receive = OSC.OSCServer(receive_port)
+receive.addDefaultHandlers()
 
 # Launchpad Object
-launch = launchpad.launchpad(send)
+launch = launchpad.launchpad(send_port, receive_port)
 
 # Softstep Object
-soft = softstep.softstep(send)
+soft = softstep.softstep(send_port, receive_port)
 
 # Polydelay object
-poly = polydelay.polydelay(send)
+poly = polydelay.polydelay(send_port, receive_port)
 
 
 
@@ -68,7 +68,7 @@ poly = polydelay.polydelay(send)
 ### --------------------------- ###
 # MESSAGE HANDLERS
 # define a message-handler function for the server to call.
-# it executes this code everytime it recieves an appropriate message
+# it executes this code everytime it receives an appropriate message
 # Main Function calls and sendback go here
 
 
@@ -81,7 +81,7 @@ def polydelay_handler(addr, tags, args, source):
     print "args %s" % args
     print "---"
     method = args.pop(0)
-    getattr(poly, method)(*args)    
+    getattr(poly, method)(args)    
 
 
 def launchpad_handler(addr, tags, args, source):
@@ -91,9 +91,13 @@ def launchpad_handler(addr, tags, args, source):
     print "typetags %s" % tags
     print "args %s" % args
     print "---"
-    method = args.pop(0)     
-    getattr(launch, method)(*args)
-
+    method = args.pop(0)
+    if method == 'refresh':
+        launch.refresh(poly)
+    elif method == 'press':
+        launch.press(poly,args)
+    else:
+        getattr(launch, method)(*args)
 
     
 def softstep_handler(addr, tags, args, source):
@@ -106,26 +110,49 @@ def softstep_handler(addr, tags, args, source):
     method = args.pop(0)     
     getattr(soft, method)(*args)
 
+def softstep_handler(addr, tags, args, source):
+    print "---"
+    print "received new osc msg from %s" % OSC.getUrlStr(source)
+    print "with addr : %s" % addr
+    print "typetags %s" % tags
+    print "args %s" % args
+    print "---"
+    method = args.pop(0)     
+    getattr(soft, method)(*args)
+
+def transport_handler(addr, tags, args, source):
+    print "---"
+    print "received new osc msg from %s" % OSC.getUrlStr(source)
+    print "with addr : %s" % addr
+    print "typetags %s" % tags
+    print "args %s" % args
+    print "---"
+    #method = args.pop(0)     
+    #getattr(soft, method)(*args)
+
+   
     
     
-    
-recieve.addMsgHandler("/polydelay", polydelay_handler) # adding our function
-recieve.addMsgHandler("/softstep", softstep_handler) # adding our function
-recieve.addMsgHandler("/launchpad", launchpad_handler) # adding our function
+receive.addMsgHandler("/polydelay", polydelay_handler) # adding our function
+receive.addMsgHandler("/softstep", softstep_handler) # adding our function
+receive.addMsgHandler("/launchpad", launchpad_handler) # adding our function
+receive.addMsgHandler("/transport", transport_handler) # adding our function
 
 
 
 ### --------------------------- ###
     
 # just checking which handlers we have added
-print "Registered Callback-functions are :"
-for addr in recieve.getOSCAddressSpace():
-    print addr
+print "Input Address:", receive_port
+print "Output Address:", send_port
+print "\nRegistered Callback-functions are :"
+for addr in receive.getOSCAddressSpace():
+    print addr 
 
 
 # Start OSCServer
 print "\nStarting OSCServer. Use ctrl-C to quit."
-rt = threading.Thread( target = recieve.serve_forever )
+rt = threading.Thread( target = receive.serve_forever )
 rt.start()
 
 
@@ -135,7 +162,7 @@ try :
 
 except KeyboardInterrupt :
     print "\nClosing OSCServer."
-    recieve.close()
+    receive.close()
     print "Waiting for Server-thread to finish"
     rt.join() ##!!!
     print "Done"
